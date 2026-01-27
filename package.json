@@ -8,7 +8,7 @@
     "heroku-postbuild": "cd frontend && npm install && npm run build"
     
   },
-  "author": "Akhil",
+  "author": "Kajal",
   "license": "ISC",
   "dependencies": {
     "@chakra-ui/react": "^1.8.5",
