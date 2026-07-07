@@ -40,6 +40,7 @@ const SideDrawer = () => {
   const [loadingChat, setLoadingChat] = useState(false);
   const {
     user,
+    setUser,
     selectedChat,
     setSelectedChat,
     chats,
@@ -51,6 +52,10 @@ const SideDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
+    setUser(null);
+    setSelectedChat(null);
+    setChats([]);
+    setNotification([]);
     history.push("/");
   };
   const toast = useToast();
@@ -104,7 +109,7 @@ const SideDrawer = () => {
         },
       };
       //creating new chat
-      const { data } = await axios.post("api/chat", { userId }, config);
+      const { data } = await axios.post("/api/chat", { userId }, config);
       //agar wo nayi chat h to current chats me append kr do
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
       setSelectedChat(data);
@@ -133,7 +138,7 @@ const SideDrawer = () => {
     //creating new chat
     const chatId = selectedChat._id;
     const { data } = await axios.put(
-      "api/message/notification",
+      "/api/message/notification",
       { chatId },
       config
     );
@@ -160,7 +165,7 @@ const SideDrawer = () => {
       >
         <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
           <Button variant="ghost" onClick={onOpen}>
-            <i class="fas fa-search" aria-hidden="true"></i>
+            <i className="fas fa-search" aria-hidden="true"></i>
             {/* choti screen pe mat dikho ,md ya badi pe dikhao */}
             <Text d={{ base: "none", md: "flex" }} px="4">
               Search User
@@ -168,7 +173,7 @@ const SideDrawer = () => {
           </Button>
         </Tooltip>
         <Text fontSize="2xl" fontFamily="Work sans">
-          Let's Chat
+          Chat With KK
         </Text>
         <div>
           <Menu>

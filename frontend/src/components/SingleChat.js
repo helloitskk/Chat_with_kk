@@ -18,7 +18,7 @@ import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client";
 import animationData from "../animations/typing.json";
 
-const ENDPOINT = "https://letuschat22.herokuapp.com/";
+const ENDPOINT = "/";
 var socket, selectedChatCompare;
 // chat page banae k liye  jispe baad me messages aayenge
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -61,12 +61,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
   useEffect(() => {
+    if (!user) return;
     socket = io(ENDPOINT);
     socket.emit("setup", user);
     socket.on("connected", () => setsocketConnected(true));
     socket.on("typing", () => setIsTyping(true));
     socket.on("stop typing", () => setIsTyping(false));
-  }, []);
+     return () => {
+    socket.disconnect();
+  };
+  }, [user]);
   useEffect(() => {
     fetchMessages();
     //create backup of selectedChat state
@@ -74,23 +78,57 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, [selectedChat]);
   console.log(notification, "------------------");
   // we want to run this usestate if every timestate changes
+  // useEffect(() => {
+  //   socket.on("message recieved", (newMessageRecieved) => {
+  //      console.count("Socket event fired");
+  //      console.log(newMessageRecieved._id);
+  //     if (
+  //       !selectedChatCompare ||
+  //       selectedChatCompare._id !== newMessageRecieved.chat._id
+  //     ) {
+  //       //give notification in case of agar wo chat nhi khuli h jisse notice nhi aaya h
+  //       if (!notification.includes(newMessageRecieved)) {
+  //         setNotification([newMessageRecieved, ...notification]);
+  //         //naya message aaya to chat fir fetch kro
+  //         setFetchAgain(!fetchAgain);
+  //       }
+  //     } else {
+  //       setMessages([...messages, newMessageRecieved]);
+  //     }
+  //   });
+  // });
+
+
   useEffect(() => {
-    socket.on("message recieved", (newMessageRecieved) => {
-      if (
-        !selectedChatCompare ||
-        selectedChatCompare._id !== newMessageRecieved.chat._id
-      ) {
-        //give notification in case of agar wo chat nhi khuli h jisse notice nhi aaya h
-        if (!notification.includes(newMessageRecieved)) {
-          setNotification([newMessageRecieved, ...notification]);
-          //naya message aaya to chat fir fetch kro
-          setFetchAgain(!fetchAgain);
+  const messageHandler = (newMessageRecieved) => {
+    console.count("Socket event fired");
+
+    if (
+      !selectedChatCompare ||
+      selectedChatCompare._id !== newMessageRecieved.chat._id
+    ) {
+      setNotification((prev) => {
+        // Prevent duplicate notifications
+        if (prev.some((msg) => msg._id === newMessageRecieved._id)) {
+          return prev;
         }
-      } else {
-        setMessages([...messages, newMessageRecieved]);
-      }
-    });
-  });
+
+        return [newMessageRecieved, ...prev];
+      });
+
+      setFetchAgain((prev) => !prev);
+    } else {
+      setMessages((prev) => [...prev, newMessageRecieved]);
+    }
+  };
+
+  socket.on("message recieved", messageHandler);
+
+  return () => {
+    socket.off("message recieved", messageHandler);
+  };
+}, []);
+
   const sendNotifications = async (content1, chatId, users) => {
     try {
       const config = {
@@ -144,7 +182,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         );
         // console.log(data);
         socket.emit("new message", data);
-        setMessages([...messages, data]);
+        setMessages((prev) => [...prev, data]);
         const users = JSON.stringify(selectedChat.users);
         sendNotifications(content1, selectedChat._id, users);
       } catch (error) {
@@ -275,7 +313,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         </>
       ) : (
         <Box d="flex" alignItems="center" justifyContent="center" h="100%">
-          <Text fontSize="3xl" pb={3} FontFamily="work sans">
+          <Text fontSize="3xl" pb={3} fontFamily="work sans">
             Click on a user to start chatting
           </Text>
         </Box>

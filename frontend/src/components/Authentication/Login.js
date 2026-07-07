@@ -6,6 +6,7 @@ import { Button } from "@chakra-ui/button";
 import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import { ChatState } from "../../Context/ChatProvider"; 
 const Login = () => {
   const toast = useToast();
   const history = useHistory();
@@ -13,6 +14,7 @@ const Login = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [loading, setLoading] = useState(false);
+  const { setUser } = ChatState();
 
   const handleClick = () => setShow(!show);
   const submitHandler = async () => {
@@ -48,8 +50,9 @@ const Login = () => {
         position: "bottom",
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
+      setUser(data);
       setLoading(false);
-      history.push("/chats");
+      history.push("/chats/");
     } catch (error) {
       toast({
         title: "Error has Occured",
@@ -118,4 +121,3 @@ const Login = () => {
 };
 
 export default Login;
-// {"_id":"6220f120aa79c6e713436d6d","name":"Test Akhil","email":"Test_Akhil@gmail.com","pic":"http://res.cloudinary.com/uploadchatimage/image/upload/v1646326046/qyvmvdgywv3rd2mrkrxl.jpg","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyMjBmMTIwYWE3OWM2ZTcxMzQzNmQ2ZCIsImlhdCI6MTY0NjMyNjA0OSwiZXhwIjoxNjQ3MTkwMDQ5fQ.pUF4oh_KeTFQtEomcYTbnWWvTUoH5rNYqZY6i5LF_co"}

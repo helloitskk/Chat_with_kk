@@ -6,6 +6,7 @@ import { Button } from "@chakra-ui/button";
 import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import { ChatState } from "../../Context/ChatProvider";
 const Signup = () => {
   const history = useHistory();
   const [show, setShow] = useState(false);
@@ -16,6 +17,7 @@ const Signup = () => {
   const [pic, setPic] = useState();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const { setUser } = ChatState();
 
   const handleClick = () => setShow(!show);
   const postDetails = (pics) => {
@@ -105,8 +107,9 @@ const Signup = () => {
         position: "bottom",
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
+      setUser(data);
       setLoading(false);
-      history.push("/chats");
+      history.push("/chats/");
     } catch (error) {
       toast({
         title: "Error has Occured",

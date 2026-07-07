@@ -10,7 +10,6 @@ import { getSender } from "../config/ChatLogics";
 import GroupChatModal from "./miscellanous/GroupChatModal";
 import { background } from "@chakra-ui/react";
 const MyChats = ({ fetchAgain }) => {
-  const [loggedUser, setLoggedUser] = useState();
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
   const [groupChat, setGroupChat] = useState([]);
   const [normalChat, setNormalChat] = useState([]);
@@ -44,11 +43,11 @@ const MyChats = ({ fetchAgain }) => {
     }
   };
   useEffect(() => {
-    setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
+  if (user) {
     fetchChats();
-    // console.log(chats);
-  }, [fetchAgain]);
-  //fetchAgain k change hote hi doobara chat fetch kro like agar group leave kr diya to
+  }
+}, [user, fetchAgain]);
+ //fetchAgain k change hote hi doobara chat fetch kro like agar group leave kr diya to
   return (
     <Box
       d={{ base: selectedChat ? "none" : "flex", md: "flex" }}
@@ -106,7 +105,7 @@ const MyChats = ({ fetchAgain }) => {
               >
                 <Text>
                   {!chat.isGroupChat
-                    ? getSender(loggedUser, chat.users)
+                    ? getSender(user, chat.users)
                     : chat.chatName}
                 </Text>
               </Box>

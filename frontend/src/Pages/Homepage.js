@@ -21,7 +21,7 @@ const Homepage = () => {
     if (user) {
       // console.log("homepage");
       // console.log(user);
-      history.push("/chats");
+      history.push("/chats/");
     }
   }, [history]);
   return (
@@ -37,7 +37,7 @@ const Homepage = () => {
         borderWidth="1px"
       >
         <Text fontSize="4xl" fontFamily="work sans" color="blue">
-          Let's Chat
+          Chat With KK
         </Text>
       </Box>
       <Box

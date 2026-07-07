@@ -46,10 +46,9 @@ const server = app.listen(
   console.log(`yey server has started on port ${PORT} wow`.yellow.bold)
 );
 const io = require("socket.io")(server, {
-  // close connection if user does not message for 60 sec to save bandwidth
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:3000",
+    origin: true,
   },
 });
 io.on("connection", (socket) => {

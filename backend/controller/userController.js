@@ -14,11 +14,13 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User already exists");
   }
   const user = await User.create({
-    name,
-    email,
-    password,
-    pic,
-  });
+  name,
+  email,
+  password,
+  pic:
+    pic ||
+    `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(name)}`,
+   });
   //   above user will be returned by user.create
   if (user) {
     res.status(201).json({
